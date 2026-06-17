@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMC Helix Partner Bootcamp Schedule — FY27</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; }
+  .shell { max-width: 820px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .header { margin-bottom: 2rem; }
+  .header h1 { font-size: 20px; font-weight: 500; color: #1a1a18; margin-bottom: 5px; }
+  .header p { font-size: 13px; color: #5f5e5a; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 2rem; }
+  .stat { background: #fff; border: 0.5px solid #ddddd6; border-radius: 8px; padding: 14px 16px; }
+  .stat-num { font-size: 24px; font-weight: 500; color: #1a1a18; }
+  .stat-num.green { color: #27500a; }
+  .stat-num.amber { color: #633806; }
+  .stat-label { font-size: 12px; color: #5f5e5a; margin-top: 3px; }
+
+  .filters { margin-bottom: 1.75rem; display: flex; flex-direction: column; gap: 10px; }
+  .filter-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .filter-label { font-size: 12px; color: #5f5e5a; min-width: 72px; }
+  .chip { font-size: 12px; padding: 5px 13px; border-radius: 20px; border: 0.5px solid #c8c8c0; background: #fff; color: #5f5e5a; cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif; }
+  .chip:hover { border-color: #88887f; color: #1a1a18; }
+  .chip.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+
+  .month-block { margin-bottom: 2rem; }
+  .month-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 0.5px solid #ddddd6; }
+  .month-label { font-size: 11px; font-weight: 500; color: #88887f; letter-spacing: .07em; text-transform: uppercase; }
+  .quarter-tag { font-size: 10px; color: #b4b2a9; letter-spacing: .04em; }
+  .count-tag { font-size: 10px; color: #b4b2a9; letter-spacing: .02em; margin-left: auto; }
+
+  .sessions { display: flex; flex-direction: column; gap: 5px; }
+  .session-row { display: grid; grid-template-columns: 88px 1fr auto auto; align-items: center; gap: 12px; padding: 10px 14px; background: #fff; border: 0.5px solid #ddddd6; border-radius: 8px; transition: border-color .15s; }
+  .session-row:hover { border-color: #aaaa9f; }
+  .session-row.past { background: #fafaf8; }
+  .session-row.past .date-col,
+  .session-row.past .name-col { color: #88887f; }
+  .session-row.cancelled { background: #fafaf8; }
+  .session-row.cancelled .date-col,
+  .session-row.cancelled .name-col { color: #b4b2a9; text-decoration: line-through; }
+
+  .date-col { font-size: 13px; font-weight: 500; color: #1a1a18; }
+  .name-col { font-size: 13px; color: #1a1a18; }
+
+  .badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; white-space: nowrap; font-weight: 400; }
+  .r-Americas      { background: #e6f1fb; color: #0c447c; }
+  .r-WW            { background: #eeedfe; color: #3c3489; }
+  .r-International { background: #faeeda; color: #633806; }
+  .r-APAC          { background: #eaf3de; color: #27500a; }
+  .r-APACEMEA      { background: #eaf3de; color: #27500a; }
+  .r-EMEAAPAC      { background: #eaf3de; color: #27500a; }
+  .r-EMEA          { background: #e6f5f5; color: #0c5c5c; }
+  .r-OnDemand      { background: #f1efe8; color: #444441; }
+  .r-TBD           { background: #f1efe8; color: #888780; }
+  .b-cancelled     { background: #fcebeb; color: #791f1f; }
+
+  .tbd-section { margin-bottom: 2rem; }
+  .tbd-block { background: #fff; border: 0.5px solid #ddddd6; border-radius: 8px; overflow: hidden; }
+  .tbd-row { display: grid; grid-template-columns: 88px 1fr auto auto; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 0.5px solid #f1efe8; }
+  .tbd-row:last-child { border-bottom: none; }
+  .tbd-date { font-size: 13px; font-weight: 500; color: #888780; }
+  .tbd-name { font-size: 13px; color: #88887f; }
+  .tbd-note { font-size: 11px; color: #b4b2a9; font-style: italic; grid-column: 1 / -1; padding-top: 2px; margin-top: -4px; }
+
+  .od-row { display: grid; grid-template-columns: 88px 1fr auto; align-items: center; gap: 12px; padding: 10px 14px; background: #fff; border: 0.5px solid #ddddd6; border-radius: 8px; }
+  .od-date { font-size: 13px; font-weight: 500; color: #888780; }
+  .od-name { font-size: 13px; color: #88887f; }
+
+  .note { font-size: 12px; color: #5f5e5a; margin-top: 1.5rem; padding: 10px 14px; border: 0.5px solid #ddddd6; border-radius: 8px; background: #fafaf8; line-height: 1.5; }
+  .note svg { vertical-align: -3px; margin-right: 6px; }
+  .note + .note { margin-top: 8px; }
+  .empty { font-size: 14px; color: #88887f; padding: 2.5rem 0; text-align: center; }
+
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .session-row, .tbd-row, .od-row { grid-template-columns: 64px 1fr; }
+    .tbd-note { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="header">
+    <h1>Partner Bootcamp Schedule — FY27</h1>
+    <p>Contact your Partner Success Manager to nominate consultants for upcoming sessions.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="s-total">—</div><div class="stat-label">Confirmed sessions</div></div>
+    <div class="stat"><div class="stat-num green" id="s-upcoming">—</div><div class="stat-label">Upcoming</div></div>
+    <div class="stat"><div class="stat-num amber" id="s-tbd">—</div><div class="stat-label">Dates TBD</div></div>
+    <div class="stat"><div class="stat-num" id="s-types">—</div><div class="stat-label">Bootcamp types</div></div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <span class="filter-label">Bootcamp</span>
+      <button class="chip active" onclick="setFilter('bootcamp','All',this)">All</button>
+      <button class="chip" onclick="setFilter('bootcamp','Agent Creation',this)">Agent Creation</button>
+      <button class="chip" onclick="setFilter('bootcamp','ITSM / ITOM',this)">ITSM / ITOM</button>
+      <button class="chip" onclick="setFilter('bootcamp','ITSM / ITOM Advanced',this)">ITSM / ITOM Advanced</button>
+      <button class="chip" onclick="setFilter('bootcamp','AIOps',this)">AIOps</button>
+      <button class="chip" onclick="setFilter('bootcamp','Modern CMDB',this)">Modern CMDB</button>
+      <button class="chip" onclick="setFilter('bootcamp','Netreo',this)">Netreo</button>
+      <button class="chip" onclick="setFilter('bootcamp','HelixGPT',this)">HelixGPT</button>
+      <button class="chip" onclick="setFilter('bootcamp','Solution Demo',this)">Solution Demo</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Region</span>
+      <button class="chip active" onclick="setFilter('region','All',this)">All</button>
+      <button class="chip" onclick="setFilter('region','Americas',this)">Americas</button>
+      <button class="chip" onclick="setFilter('region','WW',this)">Worldwide</button>
+      <button class="chip" onclick="setFilter('region','International',this)">International</button>
+      <button class="chip" onclick="setFilter('region','APAC',this)">APAC</button>
+      <button class="chip" onclick="setFilter('region','EMEA',this)">EMEA</button>
+      <button class="chip" onclick="setFilter('region','APAC/EMEA',this)">APAC/EMEA</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Quarter</span>
+      <button class="chip active" onclick="setFilter('quarter','All',this)">All</button>
+      <button class="chip" onclick="setFilter('quarter','Q1',this)">FY27 Q1</button>
+      <button class="chip" onclick="setFilter('quarter','Q2',this)">FY27 Q2</button>
+      <button class="chip" onclick="setFilter('quarter','Q3',this)">FY27 Q3</button>
+      <button class="chip" onclick="setFilter('quarter','Q4',this)">FY27 Q4</button>
+    </div>
+  </div>
+
+  <div id="schedule"></div>
+  <div id="tbd-block"></div>
+  <div id="od-block"></div>
+
+  <div class="note">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#88887f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    HelixGPT runs weekly on a rotating cadence between Americas, EMEA, and APAC. All confirmed weeks through December are listed individually below.
+  </div>
+  <div class="note">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#88887f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Session dates are subject to change. Contact your Partner Success Manager for current status and to nominate consultants.
+  </div>
+
+</div>
+<script>
+const today = new Date(); today.setHours(0,0,0,0);
+
+const sessions = [
+  // ===== Q1 (Jun) =====
+  {date:'Jun 1',  d:new Date(2026,5,1),  name:'ITSM / ITOM',           region:'Americas',  quarter:'Q1', cancelled:false},
+  {date:'Jun 1',  d:new Date(2026,5,1),  name:'Modern CMDB',           region:'WW',        quarter:'Q1', cancelled:false},
+  {date:'Jun 8',  d:new Date(2026,5,8),  name:'ITSM / ITOM',           region:'International',quarter:'Q1',cancelled:false},
+  {date:'Jun 8',  d:new Date(2026,5,8),  name:'AIOps',                 region:'WW',        quarter:'Q1', cancelled:false},
+  {date:'Jun 8',  d:new Date(2026,5,8),  name:'Agent Creation',        region:'WW',        quarter:'Q1', cancelled:false},
+  {date:'Jun 15', d:new Date(2026,5,15), name:'ITSM / ITOM Advanced',  region:'WW',        quarter:'Q1', cancelled:false},
+  {date:'Jun 22', d:new Date(2026,5,22), name:'Agent Creation',        region:'WW',        quarter:'Q1', cancelled:false},
+  {date:'Jun 22', d:new Date(2026,5,22), name:'Modern CMDB',           region:'APAC',      quarter:'Q1', cancelled:false},
+  {date:'Jun 22', d:new Date(2026,5,22), name:'HelixGPT',              region:'APAC',      quarter:'Q1', cancelled:false},
+  {date:'Jun 29', d:new Date(2026,5,29), name:'ITSM / ITOM',           region:'Americas',  quarter:'Q1', cancelled:true},
+  {date:'Jun 29', d:new Date(2026,5,29), name:'HelixGPT',              region:'Americas',  quarter:'Q1', cancelled:false},
+
+  // ===== Q2 (Jul - Aug) =====
+  {date:'Jul 6',  d:new Date(2026,6,6),  name:'ITSM / ITOM',           region:'Americas',  quarter:'Q2', cancelled:false},
+  {date:'Jul 6',  d:new Date(2026,6,6),  name:'HelixGPT',              region:'EMEA',      quarter:'Q2', cancelled:false},
+  {date:'Jul 13', d:new Date(2026,6,13), name:'ITSM / ITOM',           region:'APAC/EMEA', quarter:'Q2', cancelled:false},
+  {date:'Jul 13', d:new Date(2026,6,13), name:'ITSM / ITOM Advanced',  region:'WW',        quarter:'Q2', cancelled:false},
+  {date:'Jul 13', d:new Date(2026,6,13), name:'HelixGPT',              region:'APAC',      quarter:'Q2', cancelled:false},
+  {date:'Jul 20', d:new Date(2026,6,20), name:'HelixGPT',              region:'Americas',  quarter:'Q2', cancelled:false},
+  {date:'Jul 27', d:new Date(2026,6,27), name:'HelixGPT',              region:'EMEA',      quarter:'Q2', cancelled:false},
+  {date:'Aug 3',  d:new Date(2026,7,3),  name:'HelixGPT',              region:'APAC',      quarter:'Q2', cancelled:false},
+  {date:'Aug 10', d:new Date(2026,7,10), name:'ITSM / ITOM',           region:'Americas',  quarter:'Q2', cancelled:false},
+  {date:'Aug 10', d:new Date(2026,7,10), name:'HelixGPT',              region:'Americas',  quarter:'Q2', cancelled:false},
+  {date:'Aug 17', d:new Date(2026,7,17), name:'HelixGPT',              region:'EMEA',      quarter:'Q2', cancelled:false},
+  {date:'Aug 24', d:new Date(2026,7,24), name:'ITSM / ITOM',           region:'APAC/EMEA', quarter:'Q2', cancelled:false},
+  {date:'Aug 24', d:new Date(2026,7,24), name:'HelixGPT',              region:'APAC',      quarter:'Q2', cancelled:false},
+  {date:'Aug 31', d:new Date(2026,7,31), name:'HelixGPT',              region:'Americas',  quarter:'Q2', cancelled:false},
+
+  // ===== Q3 (Sep - Nov) =====
+  {date:'Sep 7',  d:new Date(2026,8,7),  name:'HelixGPT',              region:'EMEA',      quarter:'Q3', cancelled:false},
+  {date:'Sep 14', d:new Date(2026,8,14), name:'HelixGPT',              region:'APAC',      quarter:'Q3', cancelled:false},
+  {date:'Sep 21', d:new Date(2026,8,21), name:'ITSM / ITOM',           region:'WW',        quarter:'Q3', cancelled:false},
+  {date:'Sep 21', d:new Date(2026,8,21), name:'HelixGPT',              region:'Americas',  quarter:'Q3', cancelled:false},
+  {date:'Sep 28', d:new Date(2026,8,28), name:'HelixGPT',              region:'EMEA',      quarter:'Q3', cancelled:false},
+  {date:'Oct 5',  d:new Date(2026,9,5),  name:'ITSM / ITOM',           region:'APAC',      quarter:'Q3', cancelled:false},
+  {date:'Oct 5',  d:new Date(2026,9,5),  name:'HelixGPT',              region:'APAC',      quarter:'Q3', cancelled:false},
+  {date:'Oct 12', d:new Date(2026,9,12), name:'HelixGPT',              region:'Americas',  quarter:'Q3', cancelled:false},
+  {date:'Oct 19', d:new Date(2026,9,19), name:'HelixGPT',              region:'EMEA',      quarter:'Q3', cancelled:false},
+  {date:'Oct 26', d:new Date(2026,9,26), name:'HelixGPT',              region:'APAC',      quarter:'Q3', cancelled:false},
+  {date:'Nov 2',  d:new Date(2026,10,2), name:'ITSM / ITOM',           region:'WW',        quarter:'Q3', cancelled:false},
+  {date:'Nov 2',  d:new Date(2026,10,2), name:'HelixGPT',              region:'Americas',  quarter:'Q3', cancelled:false},
+  {date:'Nov 9',  d:new Date(2026,10,9), name:'HelixGPT',              region:'EMEA',      quarter:'Q3', cancelled:false},
+  {date:'Nov 16', d:new Date(2026,10,16),name:'ITSM / ITOM',           region:'WW',        quarter:'Q3', cancelled:false},
+  {date:'Nov 16', d:new Date(2026,10,16),name:'HelixGPT',              region:'APAC',      quarter:'Q3', cancelled:false},
+  {date:'Nov 23', d:new Date(2026,10,23),name:'HelixGPT',              region:'Americas',  quarter:'Q3', cancelled:false},
+  {date:'Nov 30', d:new Date(2026,10,30),name:'HelixGPT',              region:'EMEA',      quarter:'Q3', cancelled:false},
+
+  // ===== Q4 (Dec) =====
+  {date:'Dec 7',  d:new Date(2026,11,7), name:'HelixGPT',              region:'APAC',      quarter:'Q4', cancelled:false},
+  {date:'Dec 14', d:new Date(2026,11,14),name:'ITSM / ITOM',           region:'WW',        quarter:'Q4', cancelled:false},
+  {date:'Dec 14', d:new Date(2026,11,14),name:'HelixGPT',              region:'Americas',  quarter:'Q4', cancelled:false},
+  {date:'Dec 21', d:new Date(2026,11,21),name:'HelixGPT',              region:'EMEA',      quarter:'Q4', cancelled:false},
+  {date:'Dec 28', d:new Date(2026,11,28),name:'HelixGPT',              region:'APAC',      quarter:'Q4', cancelled:false},
+];
+
+const tbdSessions = [
+  {name:'AIOps',          region:'WW',        note:'Scheduled based on demand and interest'},
+  {name:'Netreo / BHNM', region:'Americas',  note:'Waitlist open — date TBD'},
+  {name:'Netreo / BHNM', region:'EMEA/APAC', note:'Waitlist open — date TBD'},
+];
+
+const bootcampGroups = {
+  'Agent Creation':       ['Agent Creation'],
+  'ITSM / ITOM':          ['ITSM / ITOM'],
+  'ITSM / ITOM Advanced': ['ITSM / ITOM Advanced'],
+  'AIOps':                ['AIOps'],
+  'Modern CMDB':          ['Modern CMDB'],
+  'Netreo':               ['Netreo','BHNM (Netreo)','Netreo / BHNM'],
+  'HelixGPT':             ['HelixGPT'],
+  'Solution Demo':        ['Solution Demo'],
+};
+
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const quarterLabel = {Q1:'FY27 Q1',Q2:'FY27 Q2',Q3:'FY27 Q3',Q4:'FY27 Q4'};
+const regionLabel = {WW:'Worldwide',International:'International',Americas:'Americas',APAC:'APAC','APAC/EMEA':'APAC / EMEA','EMEA/APAC':'EMEA / APAC',EMEA:'EMEA',OnDemand:'On Demand',TBD:'TBD'};
+
+let filters = {bootcamp:'All', region:'All', quarter:'All'};
+
+function setFilter(key, val, btn) {
+  filters[key] = val;
+  btn.closest('.filter-group').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function regionKey(r) { return r.replace(/[\s\/]/g,''); }
+
+function matchesFilters(s) {
+  if (filters.bootcamp !== 'All') {
+    const group = bootcampGroups[filters.bootcamp] || [filters.bootcamp];
+    if (!group.includes(s.name)) return false;
+  }
+  if (filters.region !== 'All') {
+    if (s.region !== filters.region) return false;
+  }
+  if (filters.quarter !== 'All') {
+    if (s.quarter !== filters.quarter) return false;
+  }
+  return true;
+}
+
+function render() {
+  const filtered = sessions.filter(matchesFilters);
+  const upcoming = sessions.filter(s => !s.cancelled && s.d >= today);
+  const uniqueTypes = new Set(sessions.map(s => s.name));
+
+  document.getElementById('s-total').textContent    = sessions.filter(s => !s.cancelled).length;
+  document.getElementById('s-upcoming').textContent  = upcoming.length;
+  document.getElementById('s-tbd').textContent        = tbdSessions.length;
+  document.getElementById('s-types').textContent      = uniqueTypes.size;
+
+  const byMonth = {};
+  filtered.forEach(s => {
+    const key = s.d.getFullYear() + '-' + String(s.d.getMonth()).padStart(2,'0');
+    if (!byMonth[key]) byMonth[key] = {label: monthNames[s.d.getMonth()] + ' ' + s.d.getFullYear(), quarter: s.quarter, sessions:[]};
+    byMonth[key].sessions.push(s);
+  });
+
+  let html = '';
+  Object.keys(byMonth).sort().forEach(mk => {
+    const grp = byMonth[mk];
+    html += `<div class="month-block">
+      <div class="month-header">
+        <span class="month-label">${grp.label}</span>
+        <span class="quarter-tag">${quarterLabel[grp.quarter] || ''}</span>
+        <span class="count-tag">${grp.sessions.length} session${grp.sessions.length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="sessions">`;
+    grp.sessions.sort((a,b) => a.d - b.d || a.name.localeCompare(b.name)).forEach(s => {
+      const isPast = s.d < today;
+      const rk = regionKey(s.region);
+      const rowClass = s.cancelled ? 'cancelled' : (isPast ? 'past' : '');
+      html += `<div class="session-row ${rowClass}">
+        <div class="date-col">${s.date}</div>
+        <div class="name-col">${s.name}</div>
+        <div class="badge r-${rk}">${regionLabel[s.region] || s.region}</div>
+        ${s.cancelled ? '<div class="badge b-cancelled">Cancelled</div>' : '<div></div>'}
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+
+  if (!html) html = '<div class="empty">No sessions match your filters.</div>';
+  document.getElementById('schedule').innerHTML = html;
+
+  // TBD block
+  const filteredTbd = tbdSessions.filter(t => {
+    if (filters.bootcamp !== 'All') {
+      const group = bootcampGroups[filters.bootcamp] || [filters.bootcamp];
+      if (!group.includes(t.name) && !group.some(g => t.name.includes(g.split(' ')[0]))) return false;
+    }
+    if (filters.region !== 'All' && t.region !== filters.region) return false;
+    if (filters.quarter !== 'All') return false;
+    return true;
+  });
+
+  let tbdHtml = '';
+  if (filteredTbd.length > 0) {
+    tbdHtml = `<div class="tbd-section">
+      <div class="month-header"><span class="month-label">Dates TBD</span></div>
+      <div class="tbd-block">`;
+    filteredTbd.forEach(t => {
+      const rk = regionKey(t.region);
+      tbdHtml += `<div class="tbd-row">
+        <div class="tbd-date">TBD</div>
+        <div class="tbd-name">${t.name}</div>
+        <div class="badge r-${rk}">${regionLabel[t.region] || t.region}</div>
+        <div class="tbd-note">${t.note}</div>
+      </div>`;
+    });
+    tbdHtml += `</div></div>`;
+  }
+  document.getElementById('tbd-block').innerHTML = tbdHtml;
+
+  // On Demand block
+  const showOD = filters.quarter === 'All' &&
+    (filters.bootcamp === 'All' || filters.bootcamp === 'Solution Demo') &&
+    (filters.region === 'All' || filters.region === 'WW');
+
+  document.getElementById('od-block').innerHTML = showOD ? `
+    <div class="tbd-section">
+      <div class="month-header"><span class="month-label">On Demand</span></div>
+      <div class="od-row">
+        <div class="od-date">Ongoing</div>
+        <div class="od-name">Solution Demo</div>
+        <div class="badge r-WW">Worldwide</div>
+      </div>
+    </div>` : '';
+}
+
+render();
+</script>
+</body>
+</html>
